@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">个人记账本</string>
+    <string name="tab_bills">账单</string>
+    <string name="tab_statistics">统计</string>
+    <string name="month_income">本月收入</string>
+    <string name="month_expense">本月支出</string>
+    <string name="month_balance">本月结余</string>
+    <string name="expense_breakdown">支出分类统计</string>
+    <string name="recent_records">最近记录</string>
+    <string name="add_record">添加记录</string>
+    <string name="edit_record">编辑记录</string>
+    <string name="save">保存</string>
+    <string name="cancel">取消</string>
+    <string name="delete">删除</string>
+    <string name="confirm_delete">确认删除这条记录吗？</string>
+    <string name="no_records">暂无记录，点击右下角 + 添加</string>
+</resources>
