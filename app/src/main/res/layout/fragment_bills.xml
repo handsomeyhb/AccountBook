@@ -7,33 +7,59 @@
     android:background="@color/bg_light"
     tools:context=".ui.fragment.BillsFragment">
 
-    <!-- 标题 + 列表容器 -->
+    <!-- 整体垂直布局：标题栏 + 搜索框 + 列表 -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <!-- 标题 -->
-        <TextView
-            android:layout_width="wrap_content"
+        <!-- 标题+筛选按钮 同行布局 -->
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:text="@string/recent_records"
-            android:textColor="@android:color/black"
-            android:textSize="16sp"
-            android:textStyle="bold" />
+            android:layout_margin="16dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
-        <!-- RecyclerView：可滚动的列表，下方最近记录列表（待适配 ）-->
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/recent_records"
+                android:textColor="@android:color/black"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="筛选月份"
+                android:textSize="12sp"
+                style="@style/Widget.Material3.Chip.Filter" />
+        </LinearLayout>
+
+        <!-- 搜索框 默认隐藏 -->
+        <androidx.appcompat.widget.SearchView
+            android:id="@+id/search_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="12dp"
+            android:layout_marginTop="8dp"
+            android:queryHint="搜索分类或备注…"
+            android:visibility="visible" />
+
+        <!-- 收支记录列表 -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_records"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
             tools:listitem="@layout/item_record"/>
+
     </LinearLayout>
 
-    <!-- 右下角悬浮加号按钮 -->
+    <!-- 右下角添加按钮 -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_add"
         android:layout_width="wrap_content"

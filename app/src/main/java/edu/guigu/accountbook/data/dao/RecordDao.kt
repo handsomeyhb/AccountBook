@@ -7,10 +7,33 @@ import edu.guigu.accountbook.data.model.Record
 data class CategorySummary(
     val category: String,
     val total: Double
+
+)
+/** 月度收支趋势数据 */
+data class MonthlyTrend(
+    val month: String,          // "2025-05"
+    val income: Double,         // 该月收入
+    val expense: Double         // 该月支出
 )
 
 @Dao
 interface RecordDao {
+    /** 按关键词搜索：匹配分类名或备注 */
+    @Query("SELECT * FROM records WHERE category LIKE '%' || :keyword || '%' OR note LIKE '%' || :keyword || '%' ORDER BY date DESC")
+    suspend fun searchRecords(keyword: String): List<Record>
+    /**
+     * 按月汇总收支趋势
+     */
+    @Query("""
+    SELECT 
+        strftime('%Y-%m', date / 1000, 'unixepoch') AS month,
+        SUM(CASE WHEN type = 1 THEN amount ELSE 0 END) AS income,
+        SUM(CASE WHEN type = 0 THEN amount ELSE 0 END) AS expense
+    FROM records 
+    GROUP BY month 
+    ORDER BY month ASC
+""")
+    suspend fun getMonthlyTrend(): List<MonthlyTrend>
 
     // ===== 查询 =====
 

@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import edu.guigu.accountbook.data.dao.CategorySummary
+import edu.guigu.accountbook.data.dao.MonthlyTrend
 import edu.guigu.accountbook.data.database.AppDatabase
 import edu.guigu.accountbook.data.model.Record
 import edu.guigu.accountbook.data.repository.RecordRepository
@@ -29,6 +30,10 @@ class RecordViewModel(application: Application) : AndroidViewModel(application) 
     // 支出分类汇总（给饼图用，Day 5 和进阶 X1 会用到）
     private val _expenseCategorySummary = MutableLiveData<List<CategorySummary>>(emptyList())
     val expenseCategorySummary: LiveData<List<CategorySummary>> get() = _expenseCategorySummary
+    /** 按月汇总收支趋势 */
+    private val _monthlyTrend = MutableLiveData<List<MonthlyTrend>>(emptyList())
+
+    val monthlyTrend: LiveData<List<MonthlyTrend>> get() = _monthlyTrend
 
     init {
         val dao = AppDatabase.getInstance(application).recordDao()
@@ -38,16 +43,17 @@ class RecordViewModel(application: Application) : AndroidViewModel(application) 
 
     // 获取数据业务
     private fun refreshData() {
-        // 启动协程
         viewModelScope.launch {
-            // 到数据层获取数据，转为状态数据LiveData
             _allRecords.postValue(repository.getAllRecords())
             _totalIncome.postValue(repository.getTotalIncome() ?: 0.0)
             _totalExpense.postValue(repository.getTotalExpense() ?: 0.0)
             _expenseCategorySummary.postValue(repository.getCategorySummary(Record.TYPE_EXPENSE))
+
+            // ========= 新增这两行：加载月度趋势数据 =========
+            val trendResult = repository.getMonthlyTrend()
+            _monthlyTrend.postValue(trendResult)
         }
     }
-
     // 添加数据业务
     fun insert(record: Record) {
         viewModelScope.launch {
@@ -71,4 +77,5 @@ class RecordViewModel(application: Application) : AndroidViewModel(application) 
             refreshData()
         }
     }
+
 }

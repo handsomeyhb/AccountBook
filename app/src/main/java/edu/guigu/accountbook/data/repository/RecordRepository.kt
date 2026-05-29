@@ -1,9 +1,9 @@
 package edu.guigu.accountbook.data.repository
 
 import edu.guigu.accountbook.data.dao.CategorySummary
+import edu.guigu.accountbook.data.dao.MonthlyTrend
 import edu.guigu.accountbook.data.dao.RecordDao
 import edu.guigu.accountbook.data.model.Record
-
 class RecordRepository(private val dao: RecordDao) {
 
     suspend fun getAllRecords(): List<Record> = dao.getAllRecords()
@@ -15,4 +15,7 @@ class RecordRepository(private val dao: RecordDao) {
     suspend fun update(record: Record) = dao.update(record)
     suspend fun delete(record: Record) = dao.delete(record)
     suspend fun deleteById(id: Long) = dao.deleteById(id)
+    /** 获取按月汇总的收支趋势 */
+    suspend fun getMonthlyTrend(): List<MonthlyTrend> =
+        dao.getMonthlyTrend()
 }
