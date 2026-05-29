@@ -162,7 +162,7 @@ class RecordAdapter(
             )
         }
 
-        /**
+        /*
          * 局部刷新：只更新分类相关的 UI
          */
         fun updateCategory(record: Record) {

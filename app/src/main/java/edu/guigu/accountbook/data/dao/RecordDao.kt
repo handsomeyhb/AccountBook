@@ -21,6 +21,10 @@ interface RecordDao {
     /** 按关键词搜索：匹配分类名或备注 */
     @Query("SELECT * FROM records WHERE category LIKE '%' || :keyword || '%' OR note LIKE '%' || :keyword || '%' ORDER BY date DESC")
     suspend fun searchRecords(keyword: String): List<Record>
+    
+    /** 按关键词搜索并限定日期范围 */
+    @Query("SELECT * FROM records WHERE (category LIKE '%' || :keyword || '%' OR note LIKE '%' || :keyword || '%') AND date BETWEEN :startDate AND :endDate ORDER BY date DESC")
+    suspend fun searchRecordsByDateRange(keyword: String, startDate: Long, endDate: Long): List<Record>
     /**
      * 按月汇总收支趋势
      */

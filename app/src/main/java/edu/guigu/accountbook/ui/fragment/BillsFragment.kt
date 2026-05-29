@@ -29,6 +29,7 @@ class BillsFragment : Fragment() {
     private var _binding: FragmentBillsBinding? = null
     private var currentFilterStart: Long? = null
     private var currentFilterEnd: Long? = null
+    private var currentSearchKeyword: String = ""
     private val binding get() = _binding!!
     private lateinit var viewModel: RecordViewModel
     private lateinit var adapter: RecordAdapter
@@ -106,6 +107,7 @@ class BillsFragment : Fragment() {
             currentFilterStart = null
             currentFilterEnd = null
             binding.chipFilter.isChecked = false
+            binding.chipFilter.text = "筛选月份"
             loadRecords()
         }
     }
@@ -140,32 +142,42 @@ class BillsFragment : Fragment() {
 
     private fun loadRecords() {
         viewModel.viewModelScope.launch {
-            val records = if (currentFilterStart != null && currentFilterEnd != null) {
-                // 实际应用中应通过 ViewModel/Repository 查询
-                AppDatabase.getInstance(requireContext()).recordDao()
-                    .getRecordsByDateRange(currentFilterStart!!, currentFilterEnd!!)
-            } else {
-                AppDatabase.getInstance(requireContext()).recordDao().getAllRecords()
+            val records = when {
+                // 同时有搜索和筛选
+                currentSearchKeyword.isNotBlank() && currentFilterStart != null && currentFilterEnd != null -> {
+                    AppDatabase.getInstance(requireContext()).recordDao()
+                        .searchRecordsByDateRange(currentSearchKeyword, currentFilterStart!!, currentFilterEnd!!)
+                }
+                // 只有搜索
+                currentSearchKeyword.isNotBlank() -> {
+                    AppDatabase.getInstance(requireContext()).recordDao()
+                        .searchRecords(currentSearchKeyword)
+                }
+                // 只有筛选
+                currentFilterStart != null && currentFilterEnd != null -> {
+                    AppDatabase.getInstance(requireContext()).recordDao()
+                        .getRecordsByDateRange(currentFilterStart!!, currentFilterEnd!!)
+                }
+                // 无搜索无筛选
+                else -> {
+                    AppDatabase.getInstance(requireContext()).recordDao().getAllRecords()
+                }
             }
             adapter.updateRecords(records)
         }
     }
     private fun setupSearch() {
-        // 长按筛选按钮 或 新增搜索按钮 触发
+        // 搜索功能实现
         binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean = false
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                // 点击搜索按钮时触发（可选）
+                return false
+            }
 
             override fun onQueryTextChange(newText: String?): Boolean {
-                // 每输入一个字就实时过滤
-                val keyword = newText?.trim() ?: ""
-                viewModel.viewModelScope.launch {
-                    val results = if (keyword.isBlank()) {
-                        AppDatabase.getInstance(requireContext()).recordDao().getAllRecords()
-                    } else {
-                        AppDatabase.getInstance(requireContext()).recordDao().searchRecords(keyword)
-                    }
-                    adapter.updateRecords(results)
-                }
+                // 实时搜索：每输入一个字就过滤
+                currentSearchKeyword = newText?.trim() ?: ""
+                loadRecords()
                 return true
             }
         })

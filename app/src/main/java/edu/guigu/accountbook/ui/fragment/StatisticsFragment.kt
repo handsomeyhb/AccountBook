@@ -113,7 +113,7 @@ class StatisticsFragment : Fragment() {
         val pieData = PieData(dataSet).apply {
             setValueFormatter(object : ValueFormatter() {
                 override fun getPieLabel(value: Float, pieEntry: PieEntry?): String {
-                    return "¥${DateUtils.formatAmount(value.toDouble())}"
+                    return "${String.format("%.1f", value)}%"
                 }
             })
         }
